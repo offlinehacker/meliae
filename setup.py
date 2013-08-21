@@ -29,6 +29,7 @@ def config():
         "packages": ["meliae"],
         "scripts": ["strip_duplicates.py"],
         "ext_modules": ext,
+        "setup_requires": ["Cython"],
         "classifiers": [
             'Development Status :: 4 - Beta',
             'Environment :: Console',
@@ -61,11 +62,13 @@ The name is simply a fun word (means Ash-wood Nymph).
 
     from distutils.core import setup, Extension
 
-    try:
-        from Cython.Distutils import build_ext
-    except ImportError:
-        print "We require Cython to be installed."
-        return
+    def build_ext(*args, **kwars):
+        try:
+            from Cython.Distutils import build_ext
+            return build_ext(*args, **kwargs)
+        except ImportError:
+            print "We require Cython to be installed."
+            raise
 
     kwargs["cmdclass"] = {"build_ext": build_ext}
     ext.append(Extension("meliae._scanner",
